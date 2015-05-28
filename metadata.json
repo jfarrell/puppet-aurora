@@ -1,0 +1,28 @@
+{
+  "name": "acquia-aurora",
+  "version": "0.1.0",
+  "author": "acquia",
+  "summary": "Module for managing and installing Apache Aurora",
+  "license": "Apache 2.0",
+  "source": "",
+  "project_page": "",
+  "issues_url": "",
+  "dependencies": [
+    {
+      "name": "puppetlabs-stdlib",
+      "version_requirement": ">= 1.0.0"
+    },
+    {
+      "name": "puppetlabs-apt",
+      "version_requirement": ">= 1.8.0"
+    }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "14.04"
+      ]
+    }
+  ]
+}

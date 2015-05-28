@@ -10,43 +10,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-define aurora::slave(
-  $version = undef,
-  $enable = true,
-) {
-
-  $aurora_ensure = $version ? {
-    undef    => $ensure,
-    default => $version,
-  }
-
-  package { 'aurora-executor':
-    ensure  => $aurora_ensure,
-    require => Class['aurora::repo']
-  }
-
+class aurora::slave {
   file { '/etc/default/thermos':
-    ensure  => 'present',
-    content => template('mesos/thermos.erb'),
-    owner   => $owner,
-    group   => $group,
+    ensure  => present,
+    content => template('aurora/thermos.erb'),
+    owner   => $aurora::params::owner,
+    group   => $aurora::params::group,
     mode    => '0644',
     require => Package['aurora-executor'],
   }
 
   service { 'thermos':
-    ensure     => 'running',
+    ensure     => running,
     hasstatus  => true,
     hasrestart => true,
     enable     => $enable,
     provider   => 'upstart',
-    require    => [
-      Package['aurora-executor'],
-      File['/etc/default/thermos'],
-    ],
-    subscribe  => [
-      File['/etc/default/thermos'],
-    ],
+    require    => File['/etc/default/thermos'],
+    subscribe  => File['/etc/default/thermos'],
   }
-
 }
