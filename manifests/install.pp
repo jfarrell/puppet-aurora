@@ -9,25 +9,31 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-class aurora::repo {
 
-  case $osfamily {
-    'Debian': {
-      $distro = downcase($::operatingsystem)
-      $repo   = 'main'
-      $name   = 'aurora'
-      $key    = ''
-      $key_server = 'pgp.mit.edu'
+class aurora::install {
+  include aurora::repo
 
-      apt::source { $name:
-        location    => "http://www.apache.org/dist/aurora/${distro}",
-        release     => $::lsbdistcodename,
-        repos       => $repo,
-        key         => $key,
-        key_server  => $key_server,
-        include_src => false,
-      }
+  if $aurora::params::manage_package {
+    $packages = [
+      'aurora-doc',
+      'aurora-executor',
+      'aurora-scheduler',
+      'aurora-tools',
+    ]
+
+    package { $packages:
+      ensure  => $aurora::params::version,
+      require => Class['aurora::repo'],
     }
   }
 
+  case $aurora::params::master {
+    true: {
+      include aurora::master
+    }
+    default: {
+      include aurora::slave
+    }
+  }
 }
+
