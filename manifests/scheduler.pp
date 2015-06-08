@@ -10,52 +10,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class aurora::scheduler (
-  $enable                     = aurora::enable,
-  $version                    = aurora::version,
-  $master                     = aurora::master,
-  $init_mesos_log             = aurora::init_mesos_log,
-  $owner                      = aurora::owner,
-  $group                      = aurora::group,
-  $log_level                  = aurora::log_level,
-  $libmesos_log_verbosity     = aurora::libmesos_log_verbosity,
-  $libprocess_port            = aurora::libprocess_port,
-  $java_opts                  = aurora::java_opts,
-  $cluster_name               = aurora::cluster_name,
-  $http_port                  = aurora::http_port,
-  $quorum_size                = aurora::quorum_size,
-  $zookeeper                  = aurora::zookeeper,
-  $zookeeper_mesos_path       = aurora::zookeeper_mesos_path,
-  $zookeeper_aurora_path      = aurora::zookeeper_aurora_path,
-  $thermos_executor           = aurora::thermos_executor,
-  $gc_executor                = aurora::gc_executor,
-  $thermos_executor_resources = aurora::thermos_executor_resources,
-  $allowed_container_types    = aurora::allowed_container_types,
-  $extra_scheduler_args       = aurora::extra_scheduler_args,
-) {
-
-  $aurora_ensure = $version ? {
+class aurora::scheduler {
+  $aurora_ensure = $aurora::version? {
     undef    => absent,
-    default => $version,
+    default => $aurora::version,
   }
 
-  package { 'aurora-scheduler':
+  $packages = [
+    'aurora-doc',
+    'aurora-scheduler',
+    'aurora-tools',
+  ]
+
+  package { $packages:
     ensure  => $aurora_ensure,
     require => Class['aurora::repo']
   }
 
   file { '/var/lib/aurora/scheduler':
     ensure  => 'directory',
-    owner   => $owner,
-    group   => $group,
+    owner   => $aurora::owner,
+    group   => $aurora::group,
     mode    => '0644',
     require => Package['aurora-scheduler'],
   }
 
   file { '/var/lib/aurora/scheduler/db':
     ensure  => 'directory',
-    owner   => $owner,
-    group   => $group,
+    owner   => $aurora::owner,
+    group   => $aurora::group,
     mode    => '0644',
     require => [
       Package['aurora-executor'],
@@ -66,8 +49,8 @@ class aurora::scheduler (
   file { '/etc/default/aurora-scheduler':
     ensure  => present,
     content => template('mesos/aurora-scheduler.erb'),
-    owner   => $owner,
-    group   => $group,
+    owner   => $aurora::owner,
+    group   => $aurora::group,
     mode    => '0644',
     require => Package['aurora-scheduler'],
   }
@@ -78,20 +61,5 @@ class aurora::scheduler (
       unless  => 'test -f /var/lib/aurora/scheduler/db/CURRENT',
       notify  => Service['aurora-scheduler'],
     }
-  }
-
-  service { 'aurora-scheduler':
-    ensure     => running,
-    hasstatus  => true,
-    hasrestart => true,
-    enable     => $enable,
-    provider   => 'upstart',
-    require    => [
-      Package['aurora-scheduler'],
-      File['/etc/default/aurora-scheduler'],
-    ],
-    subscribe  => [
-      File['/etc/default/aurora-scheduler'],
-    ],
   }
 }

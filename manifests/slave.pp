@@ -11,22 +11,22 @@
 # limitations under the License.
 
 class aurora::slave {
+  $packages = [
+    'aurora-doc',
+    'aurora-executor',
+  ]
+
+  package { $packages:
+    ensure  => $aurora::version,
+    require => Class['aurora::repo'],
+  }
+
   file { '/etc/default/thermos':
     ensure  => present,
     content => template('aurora/thermos.erb'),
-    owner   => $aurora::params::owner,
-    group   => $aurora::params::group,
+    owner   => $aurora::owner,
+    group   => $aurora::group,
     mode    => '0644',
     require => Package['aurora-executor'],
-  }
-
-  service { 'thermos':
-    ensure     => running,
-    hasstatus  => true,
-    hasrestart => true,
-    enable     => $enable,
-    provider   => 'upstart',
-    require    => File['/etc/default/thermos'],
-    subscribe  => File['/etc/default/thermos'],
   }
 }
