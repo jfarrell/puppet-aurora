@@ -11,25 +11,10 @@
 # limitations under the License.
 
 class aurora::install {
-  include aurora::repo
 
-  if $aurora::params::manage_package {
-    $packages = [
-      'aurora-doc',
-      'aurora-executor',
-      'aurora-scheduler',
-      'aurora-tools',
-    ]
-
-    package { $packages:
-      ensure  => $aurora::params::version,
-      require => Class['aurora::repo'],
-    }
-  }
-
-  case $aurora::params::master {
+  case $aurora::master{
     true: {
-      include aurora::master
+      include aurora::scheduler
     }
     default: {
       include aurora::slave

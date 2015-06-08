@@ -32,4 +32,13 @@ class aurora (
   $thermos_executor_resources = aurora::params::thermos_executor_resources,
   $allowed_container_types    = aurora::params::allowed_container_types,
   $extra_scheduler_args       = aurora::params::extra_scheduler_args,
-)
+) inherits aurora::params {
+
+  contain aurora::repo
+  contain aurora::install
+  contain aurora::service
+
+  Class['aurora::repo'] ->
+  Class['aurora::install'] ->
+  Class['aurora::service']
+}
