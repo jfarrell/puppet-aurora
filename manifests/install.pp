@@ -11,14 +11,12 @@
 # limitations under the License.
 
 class aurora::install {
-
-  case $aurora::master{
+  case $aurora::master {
     true: {
       include aurora::scheduler
     }
     default: {
-      include aurora::slave
+      include aurora::executor
     }
   }
 }
-

@@ -11,21 +11,24 @@
 # limitations under the License.
 class aurora::repo {
 
-  case $osfamily {
-    'Debian': {
-      $distro = downcase($::operatingsystem)
-      $repo   = 'main'
-      $name   = 'aurora'
-      $key    = ''
-      $key_server = 'pgp.mit.edu'
+  if $aurora::configure_repo {
+    case $::osfamily {
+      'Debian': {
+        $distro = downcase($::operatingsystem)
+        $repo   = 'main'
+        $repo_name   = 'aurora'
+        $key_server = 'pgp.mit.edu'
 
-      apt::source { $name:
-        location    => "http://www.apache.org/dist/aurora/${distro}",
-        release     => $::lsbdistcodename,
-        repos       => $repo,
-        key         => $key,
-        key_server  => $key_server,
-        include_src => false,
+        apt::source { $repo_name:
+          location    => "${aurora::repo_url}/${distro}",
+          release     => $::lsbdistcodename,
+          repos       => $repo,
+          key         => $aurora::repo_key,
+          key_server  => $key_server,
+          include_src => false,
+        }
+      }
+      default {
       }
     }
   }

@@ -12,8 +12,7 @@
 
 class aurora::params {
   $enable = true
-  $version = undef
-  $manage_package = false
+  $version = '0.9.0'
   $master = false
   $init_mesos_log = false
   $owner = 'aurora'
@@ -32,7 +31,11 @@ class aurora::params {
   $gc_executor = '/usr/share/aurora/bin/gc_executor.pex'
   $thermos_executor_resources = ''
   $allowed_container_types = ['DOCKER','MESOS']
-  $extra_scheduler_args = ['-enable_beta_updater=true']
+  $extra_scheduler_args = []
+  $configure_repo = true
+  $repo_url = 'http://www.apache.org/dist/aurora/'
+  # todo: This needs to default to the Apache Aurora key once it is pushed upstream
+  $repo_key = undef
 
   case $::osfamily {
     'Debian': {
