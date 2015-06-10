@@ -1,2 +1,3 @@
 require 'puppetlabs_spec_helper/module_spec_helper'
-#require 'beaker-rspec'
+require 'rspec-puppet-facts'
+include RspecPuppetFacts

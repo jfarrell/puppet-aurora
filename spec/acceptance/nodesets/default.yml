@@ -6,13 +6,15 @@ HOSTS:
       - dashboard
     platform: ubuntu-14.04-x64
     image: ubuntu:14.04
-
-
     hypervisor : docker
     docker_image_commands:
-#    - 'apt-get install software-properties-common'
-     -'add-apt-repository ppa:openjdk-r/ppa'
-     - 'apt-get install openjdk-8-jre-headless'
+      - 'apt-get install -y software-properties-common'
+
+
+      - 'add-apt-repository ppa:openjdk-r/ppa'
+      - 'apt-get update'
+      - 'apt-get install -y openjdk-8-jre-headless'
+    docker_preserve_image: true
 
 CONFIG:
   type: foss
