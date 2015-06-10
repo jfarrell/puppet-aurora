@@ -20,6 +20,9 @@ group :test do
   gem "puppetlabs_spec_helper"
   gem "metadata-json-lint"
   gem "rspec-puppet-facts"
+#  gem 'beaker-rspec', :require => false
+ gem 'serverspec',   :require => false
+
 end
 
 group :development do
