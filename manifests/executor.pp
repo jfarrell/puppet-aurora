@@ -10,7 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class aurora::slave {
+class aurora::executor {
   $packages = [
     'aurora-doc',
     'aurora-executor',
@@ -24,8 +24,6 @@ class aurora::slave {
   file { '/etc/default/thermos':
     ensure  => present,
     content => template('aurora/thermos.erb'),
-    owner   => $aurora::owner,
-    group   => $aurora::group,
     mode    => '0644',
     require => Package['aurora-executor'],
   }
