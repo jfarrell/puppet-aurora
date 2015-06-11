@@ -28,7 +28,7 @@ class aurora::repo {
           include_src => false,
         }
       }
-      default {
+      default: {
       }
     }
   }
