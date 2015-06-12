@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "author": "acquia",
   "summary": "Module for managing and installing Apache Aurora",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "source": "",
   "project_page": "",
   "issues_url": "",
