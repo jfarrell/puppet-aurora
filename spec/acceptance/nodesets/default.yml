@@ -7,10 +7,9 @@ HOSTS:
     platform: ubuntu-14.04-x64
     image: ubuntu:14.04
     hypervisor : docker
+    docker_preserve_image: true
     docker_image_commands:
       - 'apt-get install -y software-properties-common'
-
-
       - 'add-apt-repository ppa:openjdk-r/ppa'
       - 'apt-get update'
       - 'apt-get install -y openjdk-8-jre-headless'
@@ -18,4 +17,8 @@ HOSTS:
 
 CONFIG:
   type: foss
+  log_level: verbose
+ssh:
+  password: root
+  auth_methods: ["password"]
 
