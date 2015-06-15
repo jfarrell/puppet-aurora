@@ -1,5 +1,11 @@
-class aurora::service {
-  case $::os['name'] {
+class aurora::service (
+  $enable = $aurora::enable,
+  $master = $aurora::master,
+){
+  include aurora::install
+  include aurora::params
+
+  case $::operatingsystem {
     'Ubuntu': {
       $provider = 'upstart'
     }
@@ -8,10 +14,10 @@ class aurora::service {
     }
   }
 
-  if $aurora::master {
+  if $master{
     service { 'aurora-scheduler':
       ensure     => running,
-      enable     => $aurora::params::enable,
+      enable     => $enable,
       hasstatus  => true,
       hasrestart => true,
       require    => Package['aurora-scheduler'],
@@ -23,7 +29,7 @@ class aurora::service {
       ensure     => running,
       hasstatus  => true,
       hasrestart => true,
-      enable     => $aurora::params::enable,
+      enable     => $enable,
       provider   => $provider,
       require    => [
         Package['aurora-executor'],

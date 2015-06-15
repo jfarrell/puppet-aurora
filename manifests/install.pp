@@ -10,8 +10,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class aurora::install {
-  case $aurora::master {
+class aurora::install(
+  $master = $aurora::master
+){
+  include aurora::repo
+
+  case $master {
     true: {
       include aurora::scheduler
     }
