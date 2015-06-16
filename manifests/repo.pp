@@ -20,12 +20,13 @@ class aurora::repo {
         $key_server = 'pgp.mit.edu'
 
         apt::source { $repo_name:
-          location    => "${aurora::repo_url}/${distro}",
-          release     => $::lsbdistcodename,
-          repos       => $repo,
-          key         => $aurora::repo_key,
-          key_server  => $key_server,
-          include_src => false,
+          location => "${aurora::repo_url}/${distro}",
+          release  => $::lsbdistcodename,
+          repos    => $repo,
+          key      => {
+            'id'     => $aurora::repo_key,
+            'server' => $key_server,
+          },
         }
       }
       default: {
