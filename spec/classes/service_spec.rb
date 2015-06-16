@@ -1,17 +1,30 @@
 require 'spec_helper'
 
-describe 'aurora::service' do
+describe 'aurora::service', type: :class do
   on_supported_os.each do |os, facts|
-
     context "on #{os}" do
       let(:facts) do
         facts
       end
 
-      it { should compile.with_all_deps }
-      it { should contain_class('aurora::service') }
+      context 'compiles, not necessarily with dependencies' do
+        it { should compile }
+      end
 
-      let(:params) { { :enable => true } }
+      context 'compiles with all dependencies' do
+        it { should compile.with_all_deps }
+      end
+
+      context 'is present in the catalog' do
+        it { should contain_class('aurora::service') }
+      end
+
+      let(:params) {
+        {
+          enable: true
+        }
+      }
+
       describe 'an executor' do
         it do
           should contain_service('thermos')
@@ -30,7 +43,7 @@ describe 'aurora::service' do
       end
 
       describe 'a scheduler' do
-        let(:params) { super().merge({ :master => true }) }
+        let(:params) { super().merge(master: true) }
 
         it do
           should contain_service('aurora-scheduler')

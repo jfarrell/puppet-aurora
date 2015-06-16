@@ -9,11 +9,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 class aurora::repo (
   $configure = $aurora::configure_repo,
   $repo_url = $aurora::repo_url,
   $repo_key = $aurora::repo_key
 ){
+
 
   if $aurora::configure_repo {
     case $::osfamily {
@@ -37,5 +39,4 @@ class aurora::repo (
       }
     }
   }
-
 }

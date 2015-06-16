@@ -19,6 +19,7 @@ tmp
 junit
 log
 
+Puppetfile.lock
 
 .DS_Store
 .idea
@@ -34,3 +35,5 @@ puppet/third_party/*
 ec2_amazon-instance.pem
 spec/fixtures/modules/*
 .librarian/*
+spec/fixtures/*
+

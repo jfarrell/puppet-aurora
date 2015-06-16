@@ -1,41 +1,53 @@
 require 'spec_helper'
-#module name: aurora
 
-describe 'aurora::install' do
+describe 'aurora::install', type: :class do
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) do
+        facts
+      end
 
-  context 'The catalog should at the very least compile' do
-    it { should compile.with_all_deps }
-  end
+      context 'compiles, not necessarily with dependencies' do
+        it { should compile }
+      end
 
-  context 'The main aurora class should be present in the catalog' do
-    it { should contain_class('aurora') }
-  end
-end
+      context 'compiles with all dependencies' do
+        it { should compile.with_all_deps }
+      end
 
-# should the context below be in a subclass test?
-context 'The subclass aurora::master should be present in the catalog' do
-  it { should contain_class('aurora::master') } # double check if this master is a resource or a class
-end
+      context 'is present in the catalog' do
+        it { should contain_class('aurora::install') }
+      end
+    end
 
-context 'The manifest should not contain more than 2 classes' do
-  it { should have_class_count(2) }
-end
+    context 'contains 3 classes' do
+      it { should have_class_count(3) }
+    end
 
+    describe 'aurora::install contains the correct classes when master => true' do
+      let(:params) {
+         {
+           master: true
+         }
+      }
 
-  context 'with master => true' do
-    let(:params) { {'aurora::master' => true} }
+      it do
+        should contain_class('aurora::scheduler')
+        should_not contain_class('aurora::executor')
+      end
+    end
 
-    it do
-      should include_class('aurora::scheduler')
-      should_not include_class('aurora::executor')
+    describe 'aurora::install contains the correct classes when master => default' do
+      let(:params) {
+        {
+          master: 'default'
+        }
+      }
+
+      it do
+        should contain_class('aurora::executor')
+        should_not contain_class('aurora::scheduler')
+      end
     end
   end
-
-  context 'with master => default' do
-    let(:params) { {'aurora::master' => 'default'} }
-
-    it do
-      should include_class('aurora::executor')
-      should_not include_class('aurora::scheduler')
-    end
-  end
+end

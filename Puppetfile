@@ -1,4 +1,4 @@
-# Licensed under the Apache License, Version 2.0 (the "License");
+#Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -10,16 +10,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class aurora::install(
-  $master = $aurora::master
-){
-  include aurora::repo
-  case $master {
-    true: {
-      include aurora::scheduler
-    }
-    default: {
-      include aurora::executor
-    }
-  }
-}
+forge 'https://forgeapi.puppetlabs.com'
+
+mod 'puppetlabs/apt',
+  :git => 'git@github.com:puppetlabs/puppetlabs-apt.git',
+  :ref => '2.0.0'
+
+mod 'puppetlabs/stdlib',
+  :git => 'git@github.com:puppetlabs/puppetlabs-stdlib.git',
+  :ref => '4.5.1'

@@ -36,6 +36,7 @@ class aurora::params {
   $repo_url = 'http://www.apache.org/dist/aurora/'
   # todo: This needs to default to the Apache Aurora key once it is pushed upstream
   $repo_key = undef
+  $observer_port = '1338'
 
   case $::osfamily {
     'Debian': {
@@ -45,6 +46,4 @@ class aurora::params {
       $manage_package = false
     }
   }
-
 }
-

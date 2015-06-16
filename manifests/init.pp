@@ -11,10 +11,10 @@
 # limitations under the License.
 
 class aurora (
-  $enable                     = $aurora::params::enable,
+  $enable                     = ensure_bool($aurora::params::enable),
   $version                    = $aurora::params::version,
-  $master                     = $aurora::params::master,
-  $init_mesos_log             = $aurora::params::init_mesos_log,
+  $master                     = ensure_bool($aurora::params::master),
+  $init_mesos_log             = ensure_bool($aurora::params::init_mesos_log),
   $owner                      = $aurora::params::owner,
   $group                      = $aurora::params::group,
   $log_level                  = $aurora::params::log_level,
@@ -35,7 +35,37 @@ class aurora (
   $configure_repo             = $aurora::params::configure_repo,
   $repo_url                   = $aurora::params::repo_url,
   $repo_key                   = $aurora::params::repo_key,
+  $observer_port              = $aurora::params::observer_port,
 ) inherits aurora::params {
+
+validate_bool($enable)
+validate_bool($master)
+validate_bool($init_mesos_log)
+validate_string($owner)
+validate_string($group)
+validate_string($log_level)
+validate_string($libprocess_port)
+validate_array($java_opts)
+validate_string($cluster_name)
+validate_string($http_port)
+validate_numeric($quorum_size)
+validate_integer($quorum_size)
+validate_numeric($libmesos_log_verbosity)
+validate_integer($libmesos_log_verbosity)
+validate_string($zookeeper)
+validate_string($zookeeper_mesos_path)
+validate_string($zookeeper_aurora_path)
+validate_string($thermos_executor)
+validate_absolute_path($thermos_executor)
+validate_string($gc_executor)
+validate_absolute_path($gc_executor)
+validate_string($thermos_executor_resources)
+validate_array($allowed_container_types)
+validate_array($extra_scheduler_args)
+validate_bool($configure_repo)
+validate_string($repo_url)
+validate_string($observer_port)
+
 
   contain aurora::repo
   contain aurora::install

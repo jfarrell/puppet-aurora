@@ -1,7 +1,7 @@
 require 'puppetlabs_spec_helper/module_spec_helper'
 require 'rspec-puppet'
-require 'rspec-puppet-facts'
 require 'rspec-puppet/coverage'
+require 'rspec-puppet-facts'
 
 include RspecPuppetFacts
 
