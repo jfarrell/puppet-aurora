@@ -10,13 +10,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class aurora::repo (
-  $configure = $aurora::configure_repo,
-  $repo_url = $aurora::repo_url,
-  $repo_key = $aurora::repo_key
+class aurora::repo(
 ){
-
-
   if $aurora::configure_repo {
     case $::osfamily {
       'Debian': {
@@ -28,7 +23,7 @@ class aurora::repo (
         apt::source { $repo_name:
           location => "${aurora::repo_url}/${distro}",
           release  => $::lsbdistcodename,
-          repos    => $repo,
+          repos    => 'main',
           key      => {
             'id'     => $aurora::repo_key,
             'server' => $key_server,

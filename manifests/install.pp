@@ -11,10 +11,9 @@
 # limitations under the License.
 
 class aurora::install(
-  $master = $aurora::master
 ){
   include aurora::repo
-  case $master {
+  case str2bool("${aurora::master}") {
     true: {
       include aurora::scheduler
     }

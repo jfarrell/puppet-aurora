@@ -19,13 +19,6 @@ require 'puppet-syntax/tasks/puppet-syntax'
 require 'rake'
 require 'rspec/core/rake_task'
 
-
-RSpec::Core::RakeTask.new(:spec) do |t|
-  t.pattern = 'spec/*/*_spec.rb'
-end
-
-# end of contents added as required by rspec-puppet tutorial (found here:http://rspec-puppet.com/setup/)
-
 # These gems aren't always present, for instance
 # on Travis with --without development
 begin
