@@ -14,28 +14,30 @@ class aurora::params {
   $enable = true
   $version = '0.9.0'
   $master = false
-  $init_mesos_log = false
   $owner = 'aurora'
   $group = 'aurora'
-  $log_level = 'INFO'
-  $libmesos_log_verbosity = 0
-  $libprocess_port = '8083'
-  $java_opts = ['-Djava.library.path=/usr/local/lib']
-  $cluster_name = 'mesos'
-  $http_port = '8081'
-  $quorum_size = 1
-  $zookeeper = 'localhost:2181'
-  $zookeeper_mesos_path = 'mesos'
-  $zookeeper_aurora_path = 'aurora'
-  $thermos_executor = '/usr/share/aurora/bin/thermos_executor.pex'
-  $gc_executor = '/usr/share/aurora/bin/gc_executor.pex'
-  $thermos_executor_resources = ''
-  $allowed_container_types = ['DOCKER','MESOS']
-  $extra_scheduler_args = []
-  $configure_repo = true
+  $configure_repo = false
   $repo_url = 'http://www.apache.org/dist/aurora/'
   # todo: This needs to default to the Apache Aurora key once it is pushed upstream
   $repo_key = undef
+  $scheduler_options = {
+    observer_port              => '1338',
+    log_level                  => 'INFO',
+    libmesos_log_verbosity     => 0,
+    libprocess_port            => '8083',
+    java_opts                  => ['-Djava.library.path=/usr/local/lib'],
+    cluster_name               => 'mesos',
+    http_port                  => '8081',
+    quorum_size                => 1,
+    zookeeper                  => 'localhost:2181',
+    zookeeper_mesos_path       => 'mesos',
+    zookeeper_aurora_path      => 'aurora',
+    thermos_executor           => '/usr/share/aurora/bin/thermos_executor.pex',
+    gc_executor                => '/usr/share/aurora/bin/gc_executor.pex',
+    thermos_executor_resources => '',
+    allowed_container_types    => ['DOCKER','MESOS'],
+    extra_scheduler_args       => [],
+  }
 
   case $::osfamily {
     'Debian': {
@@ -45,6 +47,4 @@ class aurora::params {
       $manage_package = false
     }
   }
-
 }
-

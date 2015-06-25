@@ -9,8 +9,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-class aurora::repo {
 
+class aurora::repo(
+){
   if $aurora::configure_repo {
     case $::osfamily {
       'Debian': {
@@ -22,7 +23,7 @@ class aurora::repo {
         apt::source { $repo_name:
           location => "${aurora::repo_url}/${distro}",
           release  => $::lsbdistcodename,
-          repos    => $repo,
+          repos    => 'main',
           key      => {
             'id'     => $aurora::repo_key,
             'server' => $key_server,
@@ -33,5 +34,4 @@ class aurora::repo {
       }
     }
   }
-
 }

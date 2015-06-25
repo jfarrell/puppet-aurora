@@ -2,38 +2,38 @@
 
 ###
 # Environment variables control the behavior of the Mesos scheduler driver (libmesos).
-GLOG_v=<%= @libmesos_log_verbosity %>
-LIBPROCESS_PORT=<%= @libprocess_port %>
+GLOG_v=<%= @template_options['libmesos_log_verbosity'] %>
+LIBPROCESS_PORT=<%= @template_options['libprocess_port'] %>
 ###
 
 ###
 # Flags that control the behavior of the JVM.
-JAVA_OPTS='<%= @java_opts.join(' ') %>'
+JAVA_OPTS='<%= @template_options['java_opts'].join(' ') %>'
 ###
 
 AURORA_HOME="/var/lib/aurora"
 
 # Name of the cluster. This doesn't have to match the name set on the mesos
 # master, but it doesn't hurt.
-CLUSTER_NAME="<%= @cluster_name %>"
+CLUSTER_NAME="<%= @template_options['cluster_name'] %>"
 
 # Listening port for the scheduler
-HTTP_PORT=<%= @http_port %>
+HTTP_PORT=<%= @template_options['http_port'] %>
 
 # Replicated log quorum size. Set to (floor(number_of_schedulers / 2) + 1)
-QUORUM_SIZE=<%= @quorum_size %>
+QUORUM_SIZE=<%= @template_options['quorum_size'] %>
 
 # List of zookeeper endpoints
-ZK_ENDPOINTS="<%= @zookeeper %>"
+ZK_ENDPOINTS="<%= @template_options['zookeeper'] %>"
 
 # Zookeeper path or URL to mesos master
-MESOS_MASTER=zk://${ZK_ENDPOINTS}/<%= @zookeeper_mesos_path %>
+MESOS_MASTER=zk://${ZK_ENDPOINTS}/<%= @template_options['zookeeper_mesos_path'] %>
 
 # Zookeeper ServerSet path to register at
-ZK_SERVERSET_PATH="/<%= @zookeeper_aurora_path %>/scheduler"
+ZK_SERVERSET_PATH="/<%= @template_options['zookeeper_aurora_path'] %>/scheduler"
 
 # Log path in zookeeper
-ZK_LOGDB_PATH="/<%= @zookeeper_aurora_path %>/replicated-log"
+ZK_LOGDB_PATH="/<%= @template_options['zookeeper_aurora_path'] %>/replicated-log"
 
 # Where to store the replicated log on disk
 LOGDB_FILE_PATH="${AURORA_HOME}/scheduler/db"
@@ -42,24 +42,24 @@ LOGDB_FILE_PATH="${AURORA_HOME}/scheduler/db"
 BACKUP_DIR="${AURORA_HOME}/scheduler/backups"
 
 # Path (on the slave nodes) or URL to thermos executor or wrapper script
-THERMOS_EXECUTOR_PATH="<%= @thermos_executor %>"
+THERMOS_EXECUTOR_PATH="<%= @template_options['thermos_executor'] %>"
 
 # A comma seperated list of additional resources to copy into the sandbox.
 # Note: if thermos_executor_path is not the thermos_executor.pex file itself,
 # this must include it.
-THERMOS_EXECUTOR_RESOURCES="<%= @thermos_executor_resources %>"
+THERMOS_EXECUTOR_RESOURCES="<%= @template_options['thermos_executor_resources'] %>"
 
 # Extra arguments to be passed to the thermos executor
-THERMOS_EXECUTOR_FLAGS="<%= @thermos_executor_flags %>"
+THERMOS_EXECUTOR_FLAGS="<%= @template_options['thermos_executor_flags'] %>"
 
 # Container types that are allowed to be used by jobs.
-ALLOWED_CONTAINER_TYPES="<%= @allowed_container_types.join(',') %>"
+ALLOWED_CONTAINER_TYPES="<%= @template_options['allowed_container_types'].join(',') %>"
 
 # Path (on the slave nodes) or URL to garbage collection executor
-GC_EXECUTOR_PATH="<%= @gc_executor %>"
+GC_EXECUTOR_PATH="<%= @template_options['gc_executor'] %>"
 
 # Scheduler log verbosity
-LOG_LEVEL="<%= @log_level %>"
+LOG_LEVEL="<%= @template_options['log_level'] %>"
 
 # Any args you want to add to the aurora-scheduler invocation:
-EXTRA_SCHEDULER_ARGS="<%= @extra_scheduler_args.join(' ') %>"
+EXTRA_SCHEDULER_ARGS="<%= @template_options['extra_scheduler_args'].join(' ') %>"

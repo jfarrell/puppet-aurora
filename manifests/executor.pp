@@ -10,14 +10,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class aurora::executor {
+class aurora::executor (
+  $observer_port = $aurora::observer_port,
+){
+include aurora::repo
+
   $packages = [
     'aurora-doc',
     'aurora-executor',
   ]
 
   package { $packages:
-    ensure  => $aurora::version,
+    ensure  => $version,
     require => Class['aurora::repo'],
   }
 

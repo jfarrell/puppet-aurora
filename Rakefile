@@ -15,6 +15,10 @@ require 'puppet/vendor/semantic/lib/semantic' unless Puppet.version.to_f < 3.6
 require 'puppet-lint/tasks/puppet-lint'
 require 'puppet-syntax/tasks/puppet-syntax'
 
+# Rakefile contents required by rspec-puppet tutorial as basic rspec Puppet test setup
+require 'rake'
+require 'rspec/core/rake_task'
+
 # These gems aren't always present, for instance
 # on Travis with --without development
 begin
