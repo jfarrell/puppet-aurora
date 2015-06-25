@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'aurora::scheduler',  type: :class do
+describe 'aurora', :type => :class do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) do
@@ -9,99 +9,68 @@ describe 'aurora::scheduler',  type: :class do
 
       let(:params) do
         {
-          java_opts: [],
-          allowed_container_types: %w(DOCKER MESOS),
-          extra_scheduler_args: [],
           manage_package: true,
-          owner: '$owner',
-          group: '$group'
+          master: true,
+          scheduler_options: {
+            'observer_port' => '1338',
+            'log_level' => 'INFO',
+            'libmesos_log_verbosity' => 0,
+            'libprocess_port' => '8083',
+            'java_opts' => ['-Djava.library.path=/usr/local/lib'],
+            'cluster_name' => 'mesos',
+            'http_port' => '8081',
+            'quorum_size' => 1,
+            'zookeeper' => 'localhost:2181',
+            'zookeeper_mesos_path' => 'mesos',
+            'zookeeper_aurora_path' => 'aurora',
+            'thermos_executor' => '/usr/share/aurora/bin/thermos_executor.pex',
+            'gc_executor' => '/usr/share/aurora/bin/gc_executor.pex',
+            'thermos_executor_resources' => '',
+            'allowed_container_types' => ['DOCKER','MESOS'],
+            'extra_scheduler_args' => [],
+          },
         }
       end
 
-      context 'compiles, not necessarily with all dependencies ' do
-        it { should compile }
+      it { should compile.with_all_deps }
+
+      it { should contain_class('aurora::scheduler') }
+
+      it { should contain_package('aurora-doc') }
+      it { should contain_package('aurora-tools') }
+      it { should contain_package('aurora-scheduler') }
+
+      it { should contain_exec('init-mesos-log') }
+
+      it do
+        should contain_file('/var/lib/aurora/scheduler/db')
+          .with_ensure('directory')
+          .with_mode('0644')
+          .with_owner('aurora')
+          .with_group('aurora')
+          .with_require('[Package[aurora-scheduler]{:name=>"aurora-scheduler"}, File[/var/lib/aurora/scheduler]{:path=>"/var/lib/aurora/scheduler"}]')
       end
 
-      context 'compiles with all dependencies' do
-        it { should compile.with_all_deps }
+      it do
+        should contain_file('/var/lib/aurora/scheduler')
+          .with_ensure('directory')
+          .with_mode('0644')
+          .with_owner('aurora')
+          .with_group('aurora')
       end
 
-      context 'contains the aurora::scheduler class' do
-        it { should contain_class('aurora::scheduler') }
+      it do
+        should contain_file('/etc/default/aurora-scheduler')
+          .with_ensure('present')
+          .with_owner('aurora')
+          .with_group('aurora')
+          .with_mode('0644')
       end
 
-      context 'it should contain the aurora::repo class' do
-        it { should contain_class('aurora::repo') }
-      end
-
-      context 'it should contain the 3 dependency packages aurora-doc, aurora-tools, and aurora-scheduler class' do
-        it { should contain_package('aurora-doc') }
-        it { should contain_package('aurora-tools') }
-        it { should contain_package('aurora-scheduler') }
-      end
-
-      context 'contains the file /var/lib/aurora/scheduler/db' do
-        let(:ensure) { 'directory' }
-
+      context 'scheduler params' do
         it do
-          should contain_file('/var/lib/aurora/scheduler/db')
-          should contain_file('/var/lib/aurora/scheduler/db').with_ensure('directory')
-          should contain_file('/var/lib/aurora/scheduler/db').with_mode('0644')
-          should contain_file('/var/lib/aurora/scheduler/db').with_owner('$owner')
-          should contain_file('/var/lib/aurora/scheduler/db').with_group('$group')
-          should contain_file('/var/lib/aurora/scheduler/db').with_require('[Package[aurora-scheduler]{:name=>"aurora-scheduler"}, File[/var/lib/aurora/scheduler]{:path=>"/var/lib/aurora/scheduler"}]')
-        end
-
-        context 'contains the file /var/lib/aurora/scheduler' do
-          it do
-            should contain_file('/var/lib/aurora/scheduler')
-            should contain_file('/var/lib/aurora/scheduler').with_ensure('directory')
-            should contain_file('/var/lib/aurora/scheduler').with_mode('0644')
-            should contain_file('/var/lib/aurora/scheduler').with_owner('$owner')
-            should contain_file('/var/lib/aurora/scheduler').with_group('$group')
-            should contain_package('aurora-scheduler')
-          end
-        end
-
-        context 'contains the default/aurora-scheduler files' do
-          let(:ensure) { 'present' }
-
-          it do
-            should contain_file('/etc/default/aurora-scheduler')
-            should contain_file('/etc/default/aurora-scheduler').with_ensure('present')
-            should contain_file('/etc/default/aurora-scheduler').with_owner('$owner')
-            should contain_file('/etc/default/aurora-scheduler').with_group('$group')
-            should contain_file('/etc/default/aurora-scheduler').with_mode('0644')
-          end
-        end
-
-        context 'behaves as expected when :master => true' do
-          let(:params) do
-            {
-              java_opts: [],
-              allowed_container_types: %w(DOCKER MESOS),
-              extra_scheduler_args: [],
-              manage_package: true,
-              owner: '$owner',
-              group: '$group',
-              master: true
-            }
-          end
-
-          it do
-            should contain_exec('init-mesos-log')
-          end
-        end
-
-        context 'behaves as expected when :master => false' do
-          let(:params) do
-            {
-              master: false
-            }
-          end
-          it do
-            should_not contain_exec('init-mesos-log')
-          end
+          should contain_file('/etc/default/aurora-scheduler')
+            .with_content(/CLUSTER_NAME="mesos"/)
         end
       end
     end

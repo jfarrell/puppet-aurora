@@ -10,12 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class aurora::service (
-  $enable = $aurora::enable,
-  $master = $aurora::master,
-){
-  include aurora::install
-  include aurora::params
+class aurora::service {
 
   case $::operatingsystem {
     'Ubuntu': {
@@ -26,10 +21,10 @@ class aurora::service (
     }
   }
 
-  if $master{
+  if $aurora::master{
     service { 'aurora-scheduler':
       ensure     => running,
-      enable     => $enable,
+      enable     => $aurora::enable,
       hasstatus  => true,
       hasrestart => true,
       require    => Package['aurora-scheduler'],
@@ -41,7 +36,7 @@ class aurora::service (
       ensure     => running,
       hasstatus  => true,
       hasrestart => true,
-      enable     => $enable,
+      enable     => $aurora::enable,
       provider   => $provider,
       require    => [
         Package['aurora-executor'],
