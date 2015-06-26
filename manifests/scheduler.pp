@@ -25,8 +25,6 @@ class aurora::scheduler (
     'aurora-tools',
   ]
 
-  notice($template_options)
-
   if $aurora::manage_package {
     package { $packages:
       ensure  => $aurora_ensure,
