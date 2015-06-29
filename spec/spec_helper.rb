@@ -21,6 +21,8 @@ RSpec.configure do |c|
     end
   end
   c.after :each do
+
+    #puts `grep -ir validate_int .`
     PuppetlabsSpec::Files.cleanup
   end
 end
