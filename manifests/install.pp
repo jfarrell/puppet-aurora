@@ -13,6 +13,8 @@
 class aurora::install(
 ){
   include aurora::repo
+
+  #lint:ignore:only_variable_string
   case str2bool("${aurora::master}") {
     true: {
       include aurora::scheduler
@@ -21,4 +23,5 @@ class aurora::install(
       include aurora::executor
     }
   }
+  #lint:endignore
 }

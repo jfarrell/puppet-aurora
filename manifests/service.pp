@@ -21,7 +21,8 @@ class aurora::service {
     }
   }
 
-  if $aurora::master{
+  #lint:ignore:only_variable_string
+  if str2bool("${aurora::master}") {
     service { 'aurora-scheduler':
       ensure     => running,
       enable     => $aurora::enable,
@@ -31,6 +32,7 @@ class aurora::service {
       provider   => $provider,
     }
   }
+  #lint:endignore
   else {
     service { 'thermos':
       ensure     => running,
