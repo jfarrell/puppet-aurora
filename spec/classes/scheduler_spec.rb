@@ -27,8 +27,13 @@ describe 'aurora', type: :class do
             'gc_executor' => '/usr/share/aurora/bin/gc_executor.pex',
             'thermos_executor_resources' => '',
             'allowed_container_types' => %w(DOCKER MESOS),
-            'extra_scheduler_args' => []
-          }
+            'thermos_executor_flags' => [
+              '--announcer-enable',
+              '--announcer-ensemble=localhost:2181',
+              '--announcer-serverset-path=/server',
+            ],
+            'extra_scheduler_args' => [],
+          },
         }
       end
 
@@ -69,6 +74,12 @@ describe 'aurora', type: :class do
 
       context 'scheduler params' do
         it do
+          executor_flags_match = %r{
+              THERMOS_EXECUTOR_FLAGS="
+              --announcer-enable\s
+              --announcer-ensemble=localhost:2181\s
+              --announcer-serverset-path=/server"
+          }x
           should contain_file('/etc/default/aurora-scheduler')
             .with_content(/GLOG_v=0/)
             .with_content(/LIBPROCESS_PORT=8083/)
@@ -85,7 +96,7 @@ describe 'aurora', type: :class do
             .with_content(/BACKUP_DIR="\${AURORA_HOME}\/scheduler\/backups"/)
             .with_content(/THERMOS_EXECUTOR_PATH="\/usr\/share\/aurora\/bin\/thermos_executor.pex"/)
             .with_content(/THERMOS_EXECUTOR_RESOURCES=""/)
-            .with_content(/THERMOS_EXECUTOR_FLAGS=""/)
+            .with_content(executor_flags_match)
             .with_content(/ALLOWED_CONTAINER_TYPES="DOCKER,MESOS"/)
             .with_content(/GC_EXECUTOR_PATH="\/usr\/share\/aurora\/bin\/gc_executor.pex"/)
             .with_content(/LOG_LEVEL="INFO"/)

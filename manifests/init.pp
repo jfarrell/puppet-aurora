@@ -19,6 +19,7 @@ class aurora (
   $manage_package             = $aurora::params::manage_package,
   $repo_url                   = $aurora::params::repo_url,
   $repo_key                   = $aurora::params::repo_key,
+  $observer_port              = $aurora::params::observer_port,
   $configure_repo             = $aurora::params::configure_repo,
   $scheduler_options          = $aurora::params::scheduler_options,
 ) inherits aurora::params {
@@ -63,22 +64,22 @@ class aurora (
     if $scheduler_options['thermos_executor_resources'] {
       validate_absolute_path($scheduler_options['thermos_executor_resources'])
     }
+    if $scheduler_options['thermos_executor_flags'] {
+      validate_array($scheduler_options['thermos_executor_flags'])
+    }
     if $scheduler_options['allowed_container_types'] {
       validate_array($scheduler_options['allowed_container_types'])
     }
     if $scheduler_options['extra_scheduler_args'] {
       validate_array($scheduler_options['extra_scheduler_args'])
     }
-    if $scheduler_options['observer_port'] {
-      validate_integer($scheduler_options['observer_port'])
-    }
   }
 
-  validate_string($scheduler_options['repo_url'])
   validate_string($owner)
   validate_string($group)
   validate_string($repo_key)
   validate_string($repo_url)
+  validate_integer($observer_port)
 
   contain aurora::repo
   contain aurora::install

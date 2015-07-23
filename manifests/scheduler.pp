@@ -56,7 +56,8 @@ class aurora::scheduler (
       owner   => $aurora::owner,
       group   => $aurora::group,
       mode    => '0644',
-      require => $aurora_require
+      require => $aurora_require,
+      notify  => Service['aurora-scheduler'],
     }
 
     exec { 'init-mesos-log':
