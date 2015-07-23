@@ -20,8 +20,8 @@ class aurora::params {
   $repo_url = 'http://www.apache.org/dist/aurora/'
   # todo: This needs to default to the Apache Aurora key once it is pushed upstream
   $repo_key = undef
+  $observer_port = '1338'
   $scheduler_options = {
-    observer_port              => '1338',
     log_level                  => 'INFO',
     libmesos_log_verbosity     => 0,
     libprocess_port            => '8083',
@@ -35,6 +35,7 @@ class aurora::params {
     thermos_executor           => '/usr/share/aurora/bin/thermos_executor.pex',
     gc_executor                => '/usr/share/aurora/bin/gc_executor.pex',
     thermos_executor_resources => '',
+    thermos_executor_flags     => [],
     allowed_container_types    => ['DOCKER','MESOS'],
     extra_scheduler_args       => [],
   }

@@ -13,7 +13,6 @@ describe 'aurora' do
           enable: true,
           configure_repo: false,
           scheduler_options: {
-            'observer_port' => '1338',
             'log_level' => 'INFO',
             'libmesos_log_verbosity' => 0,
             'libprocess_port' => '8083',
@@ -102,7 +101,7 @@ describe 'aurora' do
           end
         end
 
-        $expected_ints = %w(observer_port http_port quorum_size)
+        $expected_ints = %w(http_port quorum_size)
         $expected_ints.each do |scheduler_param|
           context "with an invalid  #{scheduler_param}  parameter" do
             let (:params) do
