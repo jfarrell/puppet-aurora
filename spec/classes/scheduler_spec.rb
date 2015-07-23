@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'aurora', :type => :class do
+describe 'aurora', type: :class do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) do
@@ -26,9 +26,9 @@ describe 'aurora', :type => :class do
             'thermos_executor' => '/usr/share/aurora/bin/thermos_executor.pex',
             'gc_executor' => '/usr/share/aurora/bin/gc_executor.pex',
             'thermos_executor_resources' => '',
-            'allowed_container_types' => ['DOCKER','MESOS'],
-            'extra_scheduler_args' => [],
-          },
+            'allowed_container_types' => %w(DOCKER MESOS),
+            'extra_scheduler_args' => []
+          }
         }
       end
 
@@ -70,7 +70,26 @@ describe 'aurora', :type => :class do
       context 'scheduler params' do
         it do
           should contain_file('/etc/default/aurora-scheduler')
+            .with_content(/GLOG_v=0/)
+            .with_content(/LIBPROCESS_PORT=8083/)
+            .with_content(/JAVA_OPTS='\-Djava\.library\.path\=\/usr\/local\/lib'/)
+            .with_content(/AURORA_HOME="\/var\/lib\/aurora"/)
             .with_content(/CLUSTER_NAME="mesos"/)
+            .with_content(/HTTP_PORT=8081/)
+            .with_content(/QUORUM_SIZE=1/)
+            .with_content(/ZK_ENDPOINTS="localhost:2181"/)
+            .with_content(/MESOS_MASTER=zk:\/\/\${ZK_ENDPOINTS}\/mesos/)
+            .with_content(/ZK_SERVERSET_PATH="\/aurora\/scheduler"/)
+            .with_content(/ZK_LOGDB_PATH="\/aurora\/replicated-log"/)
+            .with_content(/LOGDB_FILE_PATH="\${AURORA_HOME}\/scheduler\/db"/)
+            .with_content(/BACKUP_DIR="\${AURORA_HOME}\/scheduler\/backups"/)
+            .with_content(/THERMOS_EXECUTOR_PATH="\/usr\/share\/aurora\/bin\/thermos_executor.pex"/)
+            .with_content(/THERMOS_EXECUTOR_RESOURCES=""/)
+            .with_content(/THERMOS_EXECUTOR_FLAGS=""/)
+            .with_content(/ALLOWED_CONTAINER_TYPES="DOCKER,MESOS"/)
+            .with_content(/GC_EXECUTOR_PATH="\/usr\/share\/aurora\/bin\/gc_executor.pex"/)
+            .with_content(/LOG_LEVEL="INFO"/)
+            .with_content(/EXTRA_SCHEDULER_ARGS=""/)
         end
       end
     end

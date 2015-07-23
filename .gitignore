@@ -18,8 +18,8 @@ test/version_tmp
 tmp
 junit
 log
-
-Puppetfile.lock
+.lock
+vendor
 
 .DS_Store
 .idea
