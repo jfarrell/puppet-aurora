@@ -20,7 +20,7 @@ class aurora::params {
   $repo_url = 'http://www.apache.org/dist/aurora/'
   # todo: This needs to default to the Apache Aurora key once it is pushed upstream
   $repo_key = undef
-  $observer_port = '1338'
+  $observer_port = 1338
   $scheduler_options = {
     log_level                  => 'INFO',
     libmesos_log_verbosity     => 0,
