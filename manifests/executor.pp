@@ -14,14 +14,13 @@ class aurora::executor (
   $observer_port = $aurora::observer_port,
 ){
 include aurora::repo
+  $aurora_ensure = $aurora::version? {
+    undef    => 'absent',
+    default => $aurora::version,
+  }
 
-  $packages = [
-    'aurora-doc',
-    'aurora-executor',
-  ]
-
-  package { $packages:
-    ensure  => $version,
+  package { 'aurora-executor':
+    ensure  => $aurora_ensure,
     require => Class['aurora::repo'],
   }
 

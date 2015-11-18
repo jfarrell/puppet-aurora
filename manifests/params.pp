@@ -39,13 +39,4 @@ class aurora::params {
     allowed_container_types    => ['DOCKER','MESOS'],
     extra_scheduler_args       => [],
   }
-
-  case $::osfamily {
-    'Debian': {
-      $manage_package = true
-    }
-    default: {
-      $manage_package = false
-    }
-  }
 }
