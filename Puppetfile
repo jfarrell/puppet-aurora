@@ -12,10 +12,6 @@
 
 forge 'https://forgeapi.puppetlabs.com'
 
-mod 'puppetlabs/apt',
-  :git => 'git@github.com:puppetlabs/puppetlabs-apt.git',
-  :ref => '2.0.0'
+mod 'puppetlabs/apt', '>= 2.0.0'
+mod 'puppetlabs/stdlib', '>= 4.5.1'
 
-mod 'puppetlabs/stdlib',
-  :git => 'git@github.com:puppetlabs/puppetlabs-stdlib.git',
-  :ref => '4.5.1'
