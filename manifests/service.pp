@@ -11,7 +11,6 @@
 # limitations under the License.
 
 class aurora::service {
-
   case $::operatingsystem {
     'Ubuntu': {
       $provider = 'upstart'
@@ -42,10 +41,10 @@ class aurora::service {
       provider   => $provider,
       require    => [
         Package['aurora-executor'],
-        File['/etc/default/thermos'],
+        File['/etc/sysconfig/thermos'],
       ],
       subscribe  => [
-        File['/etc/default/thermos'],
+        File['/etc/sysconfig/thermos'],
       ],
     }
   }

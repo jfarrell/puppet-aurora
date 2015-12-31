@@ -9,31 +9,28 @@ describe 'aurora' do
 
       let(:params) do
         {
-          version: '0.9.0',
+          version: '0.10.0',
           enable: true,
           configure_repo: false,
           scheduler_options: {
             'log_level' => 'INFO',
             'libmesos_log_verbosity' => 0,
             'libprocess_port' => '8083',
-            'java_opts' => ['-Djava.library.path=/usr/local/lib'],
+            'java_opts' => ['-server', "-Djava.library.path='/usr/lib;/usr/lib64'" ],
             'cluster_name' => 'mesos',
             'http_port' => '8081',
             'quorum_size' => 1,
-            'zookeeper' => 'localhost:2181',
+            'zookeeper' => '127.0.0.1:2181',
             'zookeeper_mesos_path' => 'mesos',
             'zookeeper_aurora_path' => 'aurora',
-            'thermos_executor' => '/usr/share/aurora/bin/thermos_executor.pex',
-            'gc_executor' => '/usr/share/aurora/bin/gc_executor.pex',
-            'thermos_executor_resources' => '',
+            'thermos_executor' => '/usr/bin/thermos_executor',
+            'thermos_executor_flags' => [ '--announcer-enable', '--announcer-ensemble 127.0.0.1:2181' ],
             'allowed_container_types' => %w(DOCKER MESOS),
-            'extra_scheduler_args' => []
           }
         }
       end
 
       it { should compile }
-      it { should contain_class('aurora::params') }
       it { should contain_class('aurora') }
       it { should contain_class('aurora::repo') }
 
@@ -66,7 +63,7 @@ describe 'aurora' do
           end
         end
 
-        $expected_array_params = %w(java_opts allowed_container_types extra_scheduler_args)
+        $expected_array_params = %w(java_opts allowed_container_types thermos_executor_flags extra_scheduler_args)
         $expected_array_params.each do |scheduler_param|
           context "with an invalid #{scheduler_param}  parameter" do
             let (:params) do
@@ -89,7 +86,7 @@ describe 'aurora' do
           end
         end
 
-        $expected_abs_path_params = %w(thermos_executor gc_executor thermos_executor_resources)
+        $expected_abs_path_params = %w(aurora_home thermos_executor_path)
         $expected_abs_path_params.each do |scheduler_param|
           context "with an invalid  #{scheduler_param}  parameter" do
             let (:params) do

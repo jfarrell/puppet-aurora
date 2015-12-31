@@ -11,25 +11,54 @@
 # limitations under the License.
 
 class aurora (
-  $enable                     = ensure_bool($aurora::params::enable),
-  $version                    = $aurora::params::version,
-  $master                     = ensure_bool($aurora::params::master),
-  $owner                      = $aurora::params::owner,
-  $group                      = $aurora::params::group,
-  $manage_package             = $aurora::params::manage_package,
-  $repo_url                   = $aurora::params::repo_url,
-  $repo_key                   = $aurora::params::repo_key,
-  $observer_port              = $aurora::params::observer_port,
-  $configure_repo             = $aurora::params::configure_repo,
-  $scheduler_options          = $aurora::params::scheduler_options,
-) inherits aurora::params {
-
+  $enable = true,
+  $version = '0.10.0',
+  $master = false,
+  $owner = 'aurora',
+  $group = 'aurora',
+  $configure_repo = false,
+  $repo_url = 'http://www.apache.org/dist/aurora/',
+  $repo_key = undef,
+  $observer_port = 1338,
+  $scheduler_options = {
+    'log_level'                  => 'INFO',
+    'libmesos_log_verbosity'     => 0,
+    'libprocess_port'            => '8083',
+    'libprocess_ip'              => '127.0.0.1',
+    'java_opts'                  => [
+                                    # Uses server-level GC optimizations, as this is a server.
+                                    '-server',
+                                    # Location of libmesos-XXXX.so / libmesos-XXXX.dylib
+                                    "-Djava.library.path='/usr/lib;/usr/lib64'",
+                                  ],
+    'cluster_name'               => 'mesos',
+    'http_port'                  => '8081',
+    'quorum_size'                => 1,
+    'zookeeper'                  => '127.0.0.1:2181',
+    'zookeeper_mesos_path'       => 'mesos',
+    'zookeeper_aurora_path'      => 'aurora',
+    'aurora_home'                => '/var/lib/aurora',
+    'thermos_executor_path'      => '/usr/bin/thermos_executor',
+    'thermos_executor_flags'     => [
+                                    '--announcer-enable',
+                                    '--announcer-ensemble 127.0.0.1:2181',
+                                  ],
+    'allowed_container_types'    => ['DOCKER','MESOS'],
+    'extra_scheduler_args'       => []
+  }
+) {
   if $scheduler_options {
     if $scheduler_options['log_level'] {
       validate_string($scheduler_options['log_level'])
     }
+    if $scheduler_options['libmesos_log_verbosity'] {
+      validate_string($scheduler_options['libmesos_log_verbosity'])
+    }
     if $scheduler_options['libprocess_port'] {
       validate_string($scheduler_options['libprocess_port'])
+    }
+    if $scheduler_options['libprocess_ip'] {
+      validate_string($scheduler_options['libprocess_ip'])
     }
     if $scheduler_options['java_opts'] {
       validate_array($scheduler_options['java_opts'])
@@ -43,9 +72,6 @@ class aurora (
     if $scheduler_options['quorum_size'] {
       validate_integer($scheduler_options['quorum_size'])
     }
-    if $scheduler_options['libmesos_log_verbosity'] {
-      validate_string($scheduler_options['libmesos_log_verbosity'])
-    }
     if $scheduler_options['zookeeper'] {
       validate_string($scheduler_options['zookeeper'])
     }
@@ -55,14 +81,11 @@ class aurora (
     if $scheduler_options['zookeeper_aurora_path'] {
       validate_string($scheduler_options['zookeeper_aurora_path'])
     }
-    if $scheduler_options['thermos_executor'] {
-      validate_absolute_path($scheduler_options['thermos_executor'])
+    if $scheduler_options['aurora_home'] {
+      validate_absolute_path($scheduler_options['aurora_home'])
     }
-    if $scheduler_options['gc_executor'] {
-      validate_absolute_path($scheduler_options['gc_executor'])
-    }
-    if $scheduler_options['thermos_executor_resources'] {
-      validate_absolute_path($scheduler_options['thermos_executor_resources'])
+    if $scheduler_options['thermos_executor_path'] {
+      validate_absolute_path($scheduler_options['thermos_executor_path'])
     }
     if $scheduler_options['thermos_executor_flags'] {
       validate_array($scheduler_options['thermos_executor_flags'])

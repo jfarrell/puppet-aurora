@@ -9,30 +9,29 @@ describe 'aurora', type: :class do
 
       let(:params) do
         {
-          manage_package: true,
           master: true,
           scheduler_options: {
             'observer_port' => '1338',
             'log_level' => 'INFO',
             'libmesos_log_verbosity' => 0,
             'libprocess_port' => '8083',
-            'java_opts' => ['-Djava.library.path=/usr/local/lib'],
+            'java_opts' => [
+              '-server',
+              "-Djava.library.path='/usr/lib;/usr/lib64'"
+            ],
             'cluster_name' => 'mesos',
             'http_port' => '8081',
             'quorum_size' => 1,
-            'zookeeper' => 'localhost:2181',
+            'zookeeper' => '127.0.0.1:2181',
             'zookeeper_mesos_path' => 'mesos',
             'zookeeper_aurora_path' => 'aurora',
-            'thermos_executor' => '/usr/share/aurora/bin/thermos_executor.pex',
-            'gc_executor' => '/usr/share/aurora/bin/gc_executor.pex',
-            'thermos_executor_resources' => '',
-            'allowed_container_types' => %w(DOCKER MESOS),
+            'aurora_home' => '/var/lib/aurora',
+            'thermos_executor_path' => '/usr/bin/thermos_executor',
             'thermos_executor_flags' => [
               '--announcer-enable',
-              '--announcer-ensemble=localhost:2181',
-              '--announcer-serverset-path=/server',
+              '--announcer-ensemble 127.0.0.1:2181',
             ],
-            'extra_scheduler_args' => [],
+            'allowed_container_types' => %w(DOCKER MESOS),
           },
         }
       end
@@ -41,7 +40,6 @@ describe 'aurora', type: :class do
 
       it { should contain_class('aurora::scheduler') }
 
-      it { should contain_package('aurora-doc') }
       it { should contain_package('aurora-tools') }
       it { should contain_package('aurora-scheduler') }
 
@@ -65,7 +63,7 @@ describe 'aurora', type: :class do
       end
 
       it do
-        should contain_file('/etc/default/aurora-scheduler')
+        should contain_file('/etc/sysconfig/aurora-scheduler')
           .with_ensure('present')
           .with_owner('aurora')
           .with_group('aurora')
@@ -74,33 +72,21 @@ describe 'aurora', type: :class do
 
       context 'scheduler params' do
         it do
-          executor_flags_match = %r{
-              THERMOS_EXECUTOR_FLAGS="
-              --announcer-enable\s
-              --announcer-ensemble=localhost:2181\s
-              --announcer-serverset-path=/server"
-          }x
-          should contain_file('/etc/default/aurora-scheduler')
+          should contain_file('/etc/sysconfig/aurora-scheduler')
             .with_content(/GLOG_v=0/)
             .with_content(/LIBPROCESS_PORT=8083/)
-            .with_content(/JAVA_OPTS='\-Djava\.library\.path\=\/usr\/local\/lib'/)
-            .with_content(/AURORA_HOME="\/var\/lib\/aurora"/)
-            .with_content(/CLUSTER_NAME="mesos"/)
-            .with_content(/HTTP_PORT=8081/)
-            .with_content(/QUORUM_SIZE=1/)
-            .with_content(/ZK_ENDPOINTS="localhost:2181"/)
-            .with_content(/MESOS_MASTER=zk:\/\/\${ZK_ENDPOINTS}\/mesos/)
-            .with_content(/ZK_SERVERSET_PATH="\/aurora\/scheduler"/)
-            .with_content(/ZK_LOGDB_PATH="\/aurora\/replicated-log"/)
-            .with_content(/LOGDB_FILE_PATH="\${AURORA_HOME}\/scheduler\/db"/)
-            .with_content(/BACKUP_DIR="\${AURORA_HOME}\/scheduler\/backups"/)
-            .with_content(/THERMOS_EXECUTOR_PATH="\/usr\/share\/aurora\/bin\/thermos_executor.pex"/)
-            .with_content(/THERMOS_EXECUTOR_RESOURCES=""/)
-            .with_content(executor_flags_match)
-            .with_content(/ALLOWED_CONTAINER_TYPES="DOCKER,MESOS"/)
-            .with_content(/GC_EXECUTOR_PATH="\/usr\/share\/aurora\/bin\/gc_executor.pex"/)
-            .with_content(/LOG_LEVEL="INFO"/)
-            .with_content(/EXTRA_SCHEDULER_ARGS=""/)
+            .with_content(/cluster_name='mesos'/)
+            .with_content(/http_port=8081/)
+            .with_content(/native_log_quorum_size='1'/)
+            .with_content(/zk_endpoints=127\.0\.0\.1\:2181/)
+            .with_content(/mesos_master_address='zk:\/\/127\.0\.0\.1:2181\/mesos'/)
+            .with_content(/serverset_path='\/aurora\/scheduler'/)
+            .with_content(/native_log_file_path='\/var\/lib\/aurora\/scheduler\/db'/)
+            .with_content(/backup_dir='\/var\/lib\/aurora\/scheduler\/backups'/)
+            .with_content(/thermos_executor_path='\/usr\/bin\/thermos_executor'/)
+            .with_content(/thermos_executor_flags='--announcer-enable --announcer-ensemble 127\.0\.0\.1:2181'/)
+            .with_content(/allowed_container_types='DOCKER,MESOS'/)
+            .with_content(/vlog='INFO'/)
         end
       end
     end

@@ -1,65 +1,80 @@
-# Defaults for Aurora startup
+#!/bin/bash
+# Configuration used when executing the Aurora task scheduler process.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-###
-# Environment variables control the behavior of the Mesos scheduler driver (libmesos).
 GLOG_v=<%= @template_options['libmesos_log_verbosity'] %>
+
 LIBPROCESS_PORT=<%= @template_options['libprocess_port'] %>
-###
+LIBPROCESS_IP=<%= @template_options['libprocess_ip'] %>
 
-###
 # Flags that control the behavior of the JVM.
-JAVA_OPTS='<%= @template_options['java_opts'].join(' ') %>'
-###
+JAVA_OPTS=(
+  <%= @template_options['java_opts'].join("\n") if @template_options['java_opts'] %>
+)
 
-AURORA_HOME="/var/lib/aurora"
+# Flags control the behavior of the Aurora scheduler.
+# For a full list of available flags, run /usr/lib/aurora/bin/aurora-scheduler -help
+AURORA_FLAGS=(
+  # The name of this cluster.
+  -cluster_name='<%= @template_options['cluster_name'] %>'
 
-# Name of the cluster. This doesn't have to match the name set on the mesos
-# master, but it doesn't hurt.
-CLUSTER_NAME="<%= @template_options['cluster_name'] %>"
+  # The HTTP port upon which Aurora will listen.
+  -http_port=<%= @template_options['http_port'] %>
 
-# Listening port for the scheduler
-HTTP_PORT=<%= @template_options['http_port'] %>
+  # The ZooKeeper URL of the ZNode where the Mesos master has registered.
+  -mesos_master_address='zk://<%= @template_options['zookeeper'] %>/<%= @template_options['zookeeper_mesos_path'] %>'
 
-# Replicated log quorum size. Set to (floor(number_of_schedulers / 2) + 1)
-QUORUM_SIZE=<%= @template_options['quorum_size'] %>
+  # The ZooKeeper quorum to which Aurora will register itself.
+  -zk_endpoints=<%= @template_options['zookeeper'] %>
 
-# List of zookeeper endpoints
-ZK_ENDPOINTS="<%= @template_options['zookeeper'] %>"
+  # The ZooKeeper ZNode within the specified quorum to which Aurora will register its
+  # ServerSet, which keeps track of all live Aurora schedulers.
+  -serverset_path='/<%= @template_options['zookeeper_aurora_path'] %>/scheduler'
 
-# Zookeeper path or URL to mesos master
-MESOS_MASTER=zk://${ZK_ENDPOINTS}/<%= @template_options['zookeeper_mesos_path'] %>
+  # The log level of the built-in logger.
+  -vlog='<%= @template_options['log_level'] %>'
 
-# Zookeeper ServerSet path to register at
-ZK_SERVERSET_PATH="/<%= @template_options['zookeeper_aurora_path'] %>/scheduler"
+  # Allows the scheduling of containers of the provided type.
+  -allowed_container_types='<%= @template_options['allowed_container_types'].join(',') if @template_options['allowed_container_types'] %>'
 
-# Log path in zookeeper
-ZK_LOGDB_PATH="/<%= @template_options['zookeeper_aurora_path'] %>/replicated-log"
+  ### Native Log Settings ###
 
-# Where to store the replicated log on disk
-LOGDB_FILE_PATH="${AURORA_HOME}/scheduler/db"
+  # The native log serves as a replicated database which stores the state of the
+  # scheduler, allowing for multi-master operation.
 
-# Where to store backups on disk
-BACKUP_DIR="${AURORA_HOME}/scheduler/backups"
+  # Size of the quorum of Aurora schedulers which possess a native log.  If running in
+  # multi-master mode, consult the following document to determine appropriate values:
+  #
+  # https://aurora.apache.org/documentation/latest/deploying-aurora-scheduler/#replicated-log-configuration
+  -native_log_quorum_size='<%= @template_options['quorum_size'] %>'
 
-# Path (on the slave nodes) or URL to thermos executor or wrapper script
-THERMOS_EXECUTOR_PATH="<%= @template_options['thermos_executor'] %>"
+  # The ZooKeeper ZNode to which Aurora will register the locations of its replicated log.
+  -native_log_zk_group_path='/<%= @template_options['zookeeper_aurora_path'] %>/native-log'
 
-# A comma seperated list of additional resources to copy into the sandbox.
-# Note: if thermos_executor_path is not the thermos_executor.pex file itself,
-# this must include it.
-THERMOS_EXECUTOR_RESOURCES="<%= @template_options['thermos_executor_resources'] %>"
+  # The local directory in which an Aurora scheduler can find Aurora's replicated log.
+  -native_log_file_path='<%= @template_options['aurora_home'] %>/scheduler/db'
 
-# Extra arguments to be passed to the thermos executor
-THERMOS_EXECUTOR_FLAGS="<%= @template_options['thermos_executor_flags'].join(' ') %>"
+  # The local directory in which Aurora schedulers will place state backups.
+  -backup_dir='<%= @template_options['aurora_home'] %>/scheduler/backups'
 
-# Container types that are allowed to be used by jobs.
-ALLOWED_CONTAINER_TYPES="<%= @template_options['allowed_container_types'].join(',') %>"
+  ### Thermos Settings ###
 
-# Path (on the slave nodes) or URL to garbage collection executor
-GC_EXECUTOR_PATH="<%= @template_options['gc_executor'] %>"
+  # The local path of the Thermos executor binary.
+  -thermos_executor_path='<%= @template_options['thermos_executor_path'] %>'
 
-# Scheduler log verbosity
-LOG_LEVEL="<%= @template_options['log_level'] %>"
+  # Flags to pass to the Thermos executor.
+  -thermos_executor_flags='<%= @template_options['thermos_executor_flags'].join(' ') if @template_options['thermos_executor_flags'] %>'
 
-# Any args you want to add to the aurora-scheduler invocation:
-EXTRA_SCHEDULER_ARGS="<%= @template_options['extra_scheduler_args'].join(' ') %>"
+  <%= @template_options['extra_scheduler_args'].join("\n") if @template_options['extra_scheduler_args'] %>
+)

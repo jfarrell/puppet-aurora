@@ -47,7 +47,7 @@ class aurora::scheduler (
     ]
   }
 
-  file { '/etc/default/aurora-scheduler':
+  file { '/etc/sysconfig/aurora-scheduler':
     ensure  => present,
     content => template('aurora/aurora-scheduler.erb'),
     owner   => $aurora::owner,

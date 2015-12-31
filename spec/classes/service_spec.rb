@@ -27,9 +27,9 @@ describe 'aurora', type: :class do
           .with_require(
             [
               'Package[aurora-executor]',
-              'File[/etc/default/thermos]'
+              'File[/etc/sysconfig/thermos]'
             ])
-          .with_subscribe('File[/etc/default/thermos]')
+          .with_subscribe('File[/etc/sysconfig/thermos]')
       end
 
       describe 'a scheduler' do

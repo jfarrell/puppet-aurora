@@ -24,7 +24,7 @@ include aurora::repo
     require => Class['aurora::repo'],
   }
 
-  file { '/etc/default/thermos':
+  file { '/etc/sysconfig/thermos':
     ensure  => present,
     content => template('aurora/thermos.erb'),
     mode    => '0644',

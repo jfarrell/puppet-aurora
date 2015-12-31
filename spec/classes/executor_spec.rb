@@ -16,15 +16,14 @@ describe 'aurora::executor', type: :class do
       it { should compile }
 
       it { should contain_class('aurora::executor') }
-      it { should contain_package('aurora-doc') }
       it { should contain_package('aurora-executor') }
 
       it do
-        should contain_file('/etc/default/thermos')
+        should contain_file('/etc/sysconfig/thermos')
           .with_ensure('present')
           .with_mode('0644')
           .with_require('Package[aurora-executor]')
-          .with_content(/OBSERVER_PORT=1338/)
+          .with_content(/--port=1338/)
       end
     end
   end
