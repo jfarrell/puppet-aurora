@@ -1,0 +1,13 @@
+<%
+  server_list = @scheduler_options['zookeeper']
+  servers = server_list.split(',').map{|i| i.split(':').first}
+  servers = servers.join(',')
+-%>
+[{
+  "name": "<%= @scheduler_options['cluster_name'] %>",
+  "zk": "<%= servers %>",
+  "auth_mechanism": "<%= @agent_options['auth_mechanism'] %>",
+  "scheduler_zk_path": "<%= @scheduler_options['zookeeper_aurora_path'] %>",
+  "slave_run_directory": "<%= @agent_options['run_directory'] %>",
+  "slave_root": "<%= @agent_options['mesos_work_dir'] %>"
+}]

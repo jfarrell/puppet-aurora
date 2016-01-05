@@ -47,6 +47,16 @@ class aurora::scheduler (
     ]
   }
 
+  file { '/etc/aurora':
+    ensure => directory,
+  }
+
+  file { '/etc/aurora/clusters.json':
+    ensure  => present,
+    content => template('aurora/clusters.json.erb'),
+    require => File['/etc/aurora'],
+  }
+
   file { '/etc/sysconfig/aurora-scheduler':
     ensure  => present,
     content => template('aurora/aurora-scheduler.erb'),

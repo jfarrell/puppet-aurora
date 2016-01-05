@@ -45,6 +45,11 @@ class aurora (
                                   ],
     'allowed_container_types'    => ['DOCKER','MESOS'],
     'extra_scheduler_args'       => []
+  },
+  $agent_options = {
+    'auth_mechanism'             => 'UNAUTHENTICATED',
+    'run_directory'              => 'latest',
+    'mesos_work_dir'             => '/var/lib/mesos'
   }
 ) {
   if $scheduler_options {
